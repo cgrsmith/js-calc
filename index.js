@@ -3,7 +3,7 @@ $(document).ready(function() {
         equationAdd($(this), $("#calcInput"));
     });
     $("#inpEquals").click(function() {
-        equationEval($("#calcInput"), $("#calcAnswer"));
+        equationEval($("#calcInput"), $("#calcResult"));
     });
     $("#calcInput").keypress(function(key) {
         if(key.which === 13){
@@ -39,9 +39,13 @@ function equationEval(inputField, outputField) {
     if (equationCheck(inputField.val())){
         //if previous result is non numeric (ie an error), set it to 0
         let prevResult = $.isNumeric(outputField.text()) ? outputField.text() : 0;
-        //
-        outputField.text(eval(equationSetup(inputField.val(), prevResult)));
-        equationClear(inputField);
+        let finalEquation = equationSetup(inputField.val(), prevResult);
+       try {
+            outputField.text(eval(finalEquation));
+            equationClear(inputField);
+        } catch(err) {
+           outputField.text("Evaluation Error");
+        }
     } else {
         outputField.text("Equation Error");
     }
@@ -59,7 +63,6 @@ function equationSetup(equationString, prevResult) {
     let testRegex = /[\+\-\*\/\^\(\)]/;
     let returnString = equationString;
     if (testRegex.test(returnString.slice(0,1))) {
-        console.log(prevResult);
         returnString = prevResult + returnString;
     }
     /*TBD - Add ^ (power) button functionality
